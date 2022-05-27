@@ -3,13 +3,16 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.springframework.boot") version "2.5.3"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    kotlin("jvm") version "1.5.21"
-    kotlin("plugin.spring") version "1.5.21"
-    kotlin("plugin.jpa") version "1.5.21"
+    kotlin("jvm") version "1.5.30"
+    kotlin("plugin.spring") version "1.5.30"
+    kotlin("plugin.jpa") version "1.5.30"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.5.30"
+    id("com.google.cloud.tools.jib") version "3.1.4"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 group = "ru.bravo"
-version = "0.0.1-SNAPSHOT"
+version = "1.0"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 configurations {
@@ -37,6 +40,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
+
+    implementation("joda-time:joda-time:2.10.10")
 
     // telegram bot
     implementation("io.github.kotlin-telegram-bot.kotlin-telegram-bot:telegram:6.0.5")
@@ -55,4 +61,17 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+jib {
+    to {
+        this.image = "bravo/alarm-bot:latest"
+    }
+}
+
+tasks.withType<Jar> {
+    this.setProperty("archiveFileName", "alarm-bot.jar")
+    this.manifest {
+        attributes["Main-Class"] = "ru.bravo.alarmbot.AlarmBotApplicationKt"
+    }
 }

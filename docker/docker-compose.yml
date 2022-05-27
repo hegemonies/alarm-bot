@@ -36,6 +36,24 @@ services:
       - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf
     command: "postgres -c config_file=/etc/postgresql/postgresql.conf"
 
+  alarm-bot:
+    image: bravo/alarm-bot:latest
+    container_name: alarm-bot
+    restart: always
+    mem_limit: 128m
+    environment:
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=alarm_bot
+      - SPRING_DATASOURCE_USERNAME=bravo
+      - SPRING_DATASOURCE_PASSWORD=bravo
+      - TELEGRAM-BOT_TOKEN=
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - bravonet
+
 volumes:
   redis-volume:
 

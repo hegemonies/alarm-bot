@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
+import ru.bravo.alarmbot.repository.AlarmMetaInfoRepository
 import ru.bravo.alarmbot.repository.TaskRepository
 
 @Configuration
@@ -18,5 +19,13 @@ class RedisConfiguration {
     fun taskRepository(connectionFactory: LettuceConnectionFactory) =
         TaskRepository().also {
             it.setConnectionFactory(connectionFactory)
+        }
+
+    @Bean
+    fun alarmMetaInfoRepository(connectionFactory: LettuceConnectionFactory) =
+        AlarmMetaInfoRepository().also {
+            it.setConnectionFactory(connectionFactory)
+            it.stringSerializer = RedisStringSerializer()
+            it.valueSerializer = RedisAlarmMetaInfoSerializer()
         }
 }
